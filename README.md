@@ -1,4 +1,4 @@
-# Atelier 🎨
+# Atelier
 
 An open-source AI Prompt Engineering Playground that empowers users to craft, test, and refine system prompts with live code execution.
 
@@ -6,18 +6,18 @@ An open-source AI Prompt Engineering Playground that empowers users to craft, te
 ![Next.js](https://img.shields.io/badge/Next.js-16-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
 
-## ✨ Features
+## Features
 
-- **🤖 Multi-Provider AI Support**: Test prompts with OpenAI (GPT-4, GPT-3.5) and Anthropic (Claude 3.5 Sonnet, Haiku)
-- **⚡ Real-time Streaming**: See AI responses stream in real-time
-- **💻 Live Code Execution**: Execute JavaScript code directly in the browser
-- **🎨 Monaco Editor**: VS Code-like editing experience with syntax highlighting
-- **🌓 Dark/Light Mode**: Beautiful themes that adapt to your preference
-- **🔐 Privacy-First**: BYOK (Bring Your Own Key) - API keys stored locally, never sent to our servers
-- **📱 Responsive Design**: Resizable panels that adapt to your workflow
-- **🚀 Zero Setup**: No backend required for MVP features
+- **Multi-Provider AI Support**: Test prompts with OpenAI (GPT-4, GPT-3.5) and Anthropic (Claude 3.5 Sonnet, Haiku)
+- **Real-time Streaming**: See AI responses stream in real-time
+- **Live Code Execution**: Execute JavaScript code directly in the browser
+- **Monaco Editor**: VS Code-like editing experience with syntax highlighting
+- **Dark/Light Mode**: Beautiful themes that adapt to your preference
+- **Privacy-First**: BYOK (Bring Your Own Key) - API keys stored locally, never sent to our servers
+- **Responsive Design**: Resizable panels that adapt to your workflow
+- **Zero Setup**: No backend required for MVP features
 
-## 🎯 Use Cases
+## Use Cases
 
 - **Developers**: Test system prompts for AI-powered applications
 - **Prompt Engineers**: Optimize and iterate on prompt templates
@@ -25,7 +25,7 @@ An open-source AI Prompt Engineering Playground that empowers users to craft, te
 - **Content Creators**: Standardize AI-assisted workflows
 - **Companies**: Build and validate AI integrations
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -58,7 +58,7 @@ Visit [http://localhost:3000](http://localhost:3000) to see Atelier in action!
 5. **Click "Run Prompt"**: See the streaming response
 6. **Test the code**: Click "Run Code" to execute JavaScript
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 ├── app/
@@ -78,7 +78,7 @@ Visit [http://localhost:3000](http://localhost:3000) to see Atelier in action!
 └── components/ui/           # shadcn/ui components
 ```
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Framework**: [Next.js 16](https://nextjs.org/) (App Router)
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
@@ -89,7 +89,7 @@ Visit [http://localhost:3000](http://localhost:3000) to see Atelier in action!
 - **Notifications**: [Sonner](https://sonner.emilkowal.ski/)
 - **Theme**: [next-themes](https://github.com/pacocoursey/next-themes)
 
-## 📝 Usage Examples
+## Usage Examples
 
 ### Example 1: Code Generation Prompt
 
@@ -115,14 +115,14 @@ Test how different system prompts affect the same user query:
 
 Compare outputs to refine your prompt strategy!
 
-## 🔐 Privacy & Security
+## Privacy & Security
 
 - **Local Storage**: API keys are stored only in your browser's localStorage
 - **No Backend**: Keys never touch our servers
 - **Client-Side Execution**: Code runs in your browser sandbox
 - **Open Source**: Audit the code yourself
 
-## 🗺️ Roadmap
+## Roadmap
 
 ### Phase 1: MVP ✅ (Current)
 - [x] OpenAI & Anthropic integration
@@ -151,7 +151,7 @@ Compare outputs to refine your prompt strategy!
 - [ ] API for programmatic access
 - [ ] LangChain/LlamaIndex export
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) for details.
 
@@ -161,26 +161,13 @@ Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - [shadcn/ui](https://ui.shadcn.com/) for the beautiful component library
 - [Monaco Editor](https://microsoft.github.io/monaco-editor/) for the code editing experience
 - [Next.js](https://nextjs.org/) team for the amazing framework
 - OpenAI and Anthropic for their powerful AI models
-
-## 📧 Contact
-
-- Website: [amansoomro.com](https://amansoomro.com)
-- GitHub: [@amansoomro062](https://github.com/amansoomro062)
-
-## ⭐ Star History
-
-If you find Atelier useful, please consider giving it a star! It helps the project grow and motivates continued development.
-
----
-
-Built with ❤️ by [Aman Soomro](https://amansoomro.com)
