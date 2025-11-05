@@ -37,7 +37,7 @@ An open-source AI Prompt Engineering Playground that empowers users to craft, te
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/atelier.git
+git clone https://github.com/amansoomro062/atelier.git
 cd atelier
 
 # Install dependencies
@@ -174,8 +174,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📧 Contact
 
-- Twitter: [@yourusername](https://twitter.com/yourusername)
-- GitHub: [@yourusername](https://github.com/yourusername)
+- Website: [amansoomro.com](https://amansoomro.com)
+- GitHub: [@amansoomro062](https://github.com/amansoomro062)
 
 ## ⭐ Star History
 
@@ -183,4 +183,4 @@ If you find Atelier useful, please consider giving it a star! It helps the proje
 
 ---
 
-Built with ❤️ by [Your Name](https://yourwebsite.com)
+Built with ❤️ by [Aman Soomro](https://amansoomro.com)
