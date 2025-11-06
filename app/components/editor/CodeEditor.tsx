@@ -132,7 +132,7 @@ export function CodeEditor({ onExecutionResult, conversationHistory = [] }: Code
 
       <Tabs value={mainTab} onValueChange={setMainTab} className="flex-1 flex flex-col overflow-hidden">
         <div className="mx-4 mt-2">
-          <TabsList className="w-full bg-muted/30">
+          <TabsList className="w-full grid grid-cols-3 bg-muted/30">
           <TabsTrigger
             value="editor"
             className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm transition-all"

@@ -53,7 +53,7 @@ export function PreviewPanel({ response = "", logs = [] }: PreviewPanelProps) {
 
       <Tabs defaultValue="response" className="flex-1 flex flex-col">
         <div className="mx-4 mt-2 mb-2">
-          <TabsList className="w-full bg-muted/30">
+          <TabsList className="w-full grid grid-cols-3 bg-muted/30">
             <TabsTrigger
               value="response"
               className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm transition-all"

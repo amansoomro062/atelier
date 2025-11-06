@@ -59,7 +59,7 @@ export function BatchTestingPanel({
 }: BatchTestingPanelProps) {
   const { testCases, addTestCase, updateTestCase, deleteTestCase } =
     useTestCases();
-  const { keys: apiKeys } = useApiKeys();
+  const { keys: apiKeys, isLoaded: keysLoaded } = useApiKeys();
   const { addTestRun } = useTestHistory();
 
   const [selectedTestCases, setSelectedTestCases] = useState<Set<string>>(
@@ -265,13 +265,18 @@ export function BatchTestingPanel({
 
           <Button
             onClick={handleRunTests}
-            disabled={isRunning || selectedPrompts.length === 0}
+            disabled={isRunning || selectedPrompts.length === 0 || !keysLoaded}
             className="w-full"
           >
             {isRunning ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Running Tests ({progress}/{total})
+              </>
+            ) : !keysLoaded ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Loading...
               </>
             ) : (
               <>

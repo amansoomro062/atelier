@@ -18,7 +18,7 @@ import { Key, Eye, EyeOff } from "lucide-react";
 import { useApiKeys } from "@/lib/hooks/useApiKeys";
 
 export function ApiKeyDialog() {
-  const { keys, setApiKey } = useApiKeys();
+  const { keys, setApiKey, clearApiKey } = useApiKeys();
   const [openaiKey, setOpenaiKey] = useState("");
   const [anthropicKey, setAnthropicKey] = useState("");
   const [showOpenai, setShowOpenai] = useState(false);
@@ -29,6 +29,12 @@ export function ApiKeyDialog() {
     if (openaiKey) setApiKey("openai", openaiKey);
     if (anthropicKey) setApiKey("anthropic", anthropicKey);
     setOpen(false);
+  };
+
+  const handleRemove = (provider: "openai" | "anthropic") => {
+    if (confirm(`Are you sure you want to remove your ${provider === "openai" ? "OpenAI" : "Anthropic"} API key?`)) {
+      clearApiKey(provider);
+    }
   };
 
   return (
@@ -93,9 +99,19 @@ export function ApiKeyDialog() {
               </p>
             </div>
             {keys.openai && (
-              <p className="text-xs text-green-600 dark:text-green-400">
-                ✓ API key configured
-              </p>
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-green-600 dark:text-green-400">
+                  ✓ API key configured
+                </p>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleRemove("openai")}
+                  className="h-7 text-xs text-destructive hover:text-destructive"
+                >
+                  Remove
+                </Button>
+              </div>
             )}
           </TabsContent>
 
@@ -138,9 +154,19 @@ export function ApiKeyDialog() {
               </p>
             </div>
             {keys.anthropic && (
-              <p className="text-xs text-green-600 dark:text-green-400">
-                ✓ API key configured
-              </p>
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-green-600 dark:text-green-400">
+                  ✓ API key configured
+                </p>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleRemove("anthropic")}
+                  className="h-7 text-xs text-destructive hover:text-destructive"
+                >
+                  Remove
+                </Button>
+              </div>
             )}
           </TabsContent>
         </Tabs>

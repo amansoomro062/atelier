@@ -42,7 +42,7 @@ export function PromptEditor({
   const [tokenUsage, setTokenUsage] = useState<{ prompt: number; completion: number; total: number } | null>(null);
   const [cumulativeTokens, setCumulativeTokens] = useState({ prompt: 0, completion: 0, total: 0 });
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const { getApiKey } = useApiKeys();
+  const { getApiKey, isLoaded } = useApiKeys();
 
   const setIsRunning = onRunningChange;
   const setConversationHistory = onConversationHistoryChange;
@@ -357,11 +357,16 @@ export function PromptEditor({
       </div>
 
       <div className="border-t p-4">
-        <Button onClick={handleRun} className="w-full" size="lg" disabled={isRunning}>
+        <Button onClick={handleRun} className="w-full" size="lg" disabled={isRunning || !isLoaded}>
           {isRunning ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Generating...
+            </>
+          ) : !isLoaded ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Loading...
             </>
           ) : (
             <>
