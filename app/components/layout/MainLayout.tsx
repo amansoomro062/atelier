@@ -68,7 +68,10 @@ export function MainLayout() {
 
         {/* Code Editor Panel */}
         <ResizablePanel defaultSize={45} minSize={30}>
-          <CodeEditor onExecutionResult={setConsoleLogs} />
+          <CodeEditor
+            onExecutionResult={setConsoleLogs}
+            conversationHistory={conversationHistory}
+          />
         </ResizablePanel>
 
         <ResizableHandle withHandle />

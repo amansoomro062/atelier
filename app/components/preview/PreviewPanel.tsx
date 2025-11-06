@@ -31,8 +31,8 @@ export function PreviewPanel({ response = "", logs = [] }: PreviewPanelProps) {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="border-b p-4">
-        <div className="flex items-center justify-between">
+      <div className="border-b p-4 h-[57px] flex items-center">
+        <div className="flex items-center justify-between w-full">
           <h2 className="font-semibold">Output</h2>
           {response && (
             <Button
@@ -52,11 +52,26 @@ export function PreviewPanel({ response = "", logs = [] }: PreviewPanelProps) {
       </div>
 
       <Tabs defaultValue="response" className="flex-1 flex flex-col">
-        <div className="border-b px-4">
-          <TabsList>
-            <TabsTrigger value="response">AI Response</TabsTrigger>
-            <TabsTrigger value="preview">Preview</TabsTrigger>
-            <TabsTrigger value="console">Console</TabsTrigger>
+        <div className="mx-4 mt-2 mb-2">
+          <TabsList className="w-full bg-muted/30">
+            <TabsTrigger
+              value="response"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm transition-all"
+            >
+              AI Response
+            </TabsTrigger>
+            <TabsTrigger
+              value="preview"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm transition-all"
+            >
+              Preview
+            </TabsTrigger>
+            <TabsTrigger
+              value="console"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm transition-all"
+            >
+              Console
+            </TabsTrigger>
           </TabsList>
         </div>
 
@@ -77,7 +92,7 @@ export function PreviewPanel({ response = "", logs = [] }: PreviewPanelProps) {
         </TabsContent>
 
         <TabsContent value="preview" className="flex-1 m-0 p-4">
-          <Card className="h-full bg-white dark:bg-zinc-950">
+          <Card className="h-full bg-card">
             <div className="flex h-full items-center justify-center text-muted-foreground">
               Preview will appear here
             </div>

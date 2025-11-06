@@ -46,8 +46,8 @@
 :root {
   --radius: 0.625rem;
 
-  /* Soft warm white background */
-  --background: oklch(0.99 0.002 90);
+  /* Soft warm off-white background */
+  --background: oklch(0.97 0.008 85);
   --foreground: oklch(0.20 0.01 260);
 
   /* Clean elevated surfaces */
