@@ -1,6 +1,13 @@
 export interface Message {
   role: "system" | "user" | "assistant";
   content: string;
+  images?: Array<{ data: string; mimeType: string }>;
+  tokens?: {
+    prompt: number;
+    completion: number;
+    total: number;
+  };
+  timestamp?: string;
 }
 
 export interface AIProvider {

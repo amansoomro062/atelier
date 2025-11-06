@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -12,9 +14,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Play, Settings, Loader2, ImagePlus, X } from "lucide-react";
+import { Play, Settings, Loader2, ImagePlus, X, RotateCcw } from "lucide-react";
 import { useApiKeys } from "@/lib/hooks/useApiKeys";
 import { getModelsForProvider, DEFAULT_MODELS } from "@/lib/config/models";
+import { Message } from "@/lib/types";
 import { toast } from "sonner";
 
 interface PromptEditorProps {
@@ -24,10 +27,14 @@ interface PromptEditorProps {
 export function PromptEditor({ onResponse }: PromptEditorProps) {
   const [systemPrompt, setSystemPrompt] = useState("");
   const [userPrompt, setUserPrompt] = useState("");
-  const [provider, setProvider] = useState<"openai" | "anthropic">("openai");
-  const [model, setModel] = useState(DEFAULT_MODELS.openai);
+  const [provider, setProvider] = useState<"openai" | "anthropic">("anthropic");
+  const [model, setModel] = useState(DEFAULT_MODELS.anthropic);
   const [isRunning, setIsRunning] = useState(false);
   const [images, setImages] = useState<Array<{ file: File; preview: string }>>([]);
+  const [isConversational, setIsConversational] = useState(false);
+  const [conversationHistory, setConversationHistory] = useState<Message[]>([]);
+  const [tokenUsage, setTokenUsage] = useState<{ prompt: number; completion: number; total: number } | null>(null);
+  const [cumulativeTokens, setCumulativeTokens] = useState({ prompt: 0, completion: 0, total: 0 });
   const { getApiKey } = useApiKeys();
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,6 +88,7 @@ export function PromptEditor({ onResponse }: PromptEditorProps) {
 
     setIsRunning(true);
     let fullResponse = "";
+    let responseTokens: { prompt: number; completion: number; total: number } | null = null;
 
     try {
       const endpoint = provider === "openai" ? "/api/openai" : "/api/anthropic";
@@ -89,6 +97,12 @@ export function PromptEditor({ onResponse }: PromptEditorProps) {
       const imageData = images.map((img) => ({
         data: img.preview.split(',')[1], // Remove data:image/...;base64, prefix
         mimeType: img.file.type,
+      }));
+
+      // Build conversation history for API (only role and content, no images in history)
+      const apiMessages = conversationHistory.map(msg => ({
+        role: msg.role === "system" ? "user" : msg.role, // Convert system to user for history
+        content: msg.content
       }));
 
       const response = await fetch(endpoint, {
@@ -102,6 +116,7 @@ export function PromptEditor({ onResponse }: PromptEditorProps) {
           model,
           apiKey,
           images: imageData.length > 0 ? imageData : undefined,
+          messages: isConversational ? apiMessages : undefined,
         }),
       });
 
@@ -135,11 +150,46 @@ export function PromptEditor({ onResponse }: PromptEditorProps) {
                 fullResponse += parsed.content;
                 onResponse?.(fullResponse);
               }
+              if (parsed.tokens) {
+                responseTokens = parsed.tokens;
+              }
             } catch (e) {
               // Skip invalid JSON
             }
           }
         }
+      }
+
+      // Update conversation history if in conversational mode
+      if (isConversational) {
+        const userMessage: Message = {
+          role: "user",
+          content: userPrompt,
+          images: imageData.length > 0 ? imageData : undefined,
+          timestamp: new Date().toISOString(),
+        };
+        const assistantMessage: Message = {
+          role: "assistant",
+          content: fullResponse,
+          timestamp: new Date().toISOString(),
+        };
+        setConversationHistory([...conversationHistory, userMessage, assistantMessage]);
+      }
+
+      // Update token usage
+      if (responseTokens) {
+        setTokenUsage(responseTokens);
+        setCumulativeTokens(prev => ({
+          prompt: prev.prompt + responseTokens!.prompt,
+          completion: prev.completion + responseTokens!.completion,
+          total: prev.total + responseTokens!.total,
+        }));
+      }
+
+      // Clear input and images for next turn in conversational mode
+      if (isConversational) {
+        setUserPrompt("");
+        setImages([]);
       }
 
       toast.success("Response generated successfully");
@@ -151,14 +201,28 @@ export function PromptEditor({ onResponse }: PromptEditorProps) {
     }
   };
 
+  const handleResetConversation = () => {
+    setConversationHistory([]);
+    setCumulativeTokens({ prompt: 0, completion: 0, total: 0 });
+    setTokenUsage(null);
+    setUserPrompt("");
+    setImages([]);
+    toast.success("Conversation reset");
+  };
+
   return (
     <div className="flex h-full flex-col">
       <div className="border-b p-4">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-semibold">Prompt Editor</h2>
-          <Button size="icon" variant="ghost">
-            <Settings className="h-4 w-4" />
-          </Button>
+          <div className="flex items-center gap-2">
+            {isConversational && conversationHistory.length > 0 && (
+              <Button size="sm" variant="outline" onClick={handleResetConversation} disabled={isRunning}>
+                <RotateCcw className="h-3 w-3 mr-1" />
+                Reset
+              </Button>
+            )}
+          </div>
         </div>
 
         <div className="space-y-3">
@@ -169,7 +233,6 @@ export function PromptEditor({ onResponse }: PromptEditorProps) {
               onValueChange={(v: "openai" | "anthropic") => {
                 setProvider(v);
                 setModel(DEFAULT_MODELS[v]);
-                // Clear images when switching providers if needed
               }}
               disabled={isRunning}
             >
@@ -198,6 +261,45 @@ export function PromptEditor({ onResponse }: PromptEditorProps) {
               </SelectContent>
             </Select>
           </div>
+
+          <div className="flex items-center justify-between py-2">
+            <Label htmlFor="conversational-mode" className="text-sm font-medium">
+              Conversational Mode
+            </Label>
+            <Switch
+              id="conversational-mode"
+              checked={isConversational}
+              onCheckedChange={setIsConversational}
+              disabled={isRunning}
+            />
+          </div>
+
+          {tokenUsage && (
+            <div className="text-xs text-muted-foreground space-y-1 py-2 border-t">
+              <div className="font-medium">Last Response:</div>
+              <div className="flex justify-between">
+                <span>Prompt tokens:</span>
+                <span>{tokenUsage.prompt.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Completion tokens:</span>
+                <span>{tokenUsage.completion.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between font-medium">
+                <span>Total:</span>
+                <span>{tokenUsage.total.toLocaleString()}</span>
+              </div>
+              {isConversational && cumulativeTokens.total > 0 && (
+                <>
+                  <div className="font-medium mt-2">Session Total:</div>
+                  <div className="flex justify-between font-semibold">
+                    <span>All tokens:</span>
+                    <span>{cumulativeTokens.total.toLocaleString()}</span>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
         </div>
       </div>
 

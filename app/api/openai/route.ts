@@ -5,7 +5,7 @@ export const runtime = "edge";
 
 export async function POST(req: NextRequest) {
   try {
-    const { systemPrompt, userPrompt, model, apiKey, images } = await req.json();
+    const { systemPrompt, userPrompt, model, apiKey, images, messages: conversationHistory } = await req.json();
 
     if (!apiKey) {
       return NextResponse.json(
@@ -20,10 +20,17 @@ export async function POST(req: NextRequest) {
 
     const messages: Array<any> = [];
 
+    // Add system prompt if provided
     if (systemPrompt) {
       messages.push({ role: "system", content: systemPrompt });
     }
 
+    // Add conversation history if provided
+    if (conversationHistory && conversationHistory.length > 0) {
+      messages.push(...conversationHistory);
+    }
+
+    // Add current user message
     if (userPrompt) {
       // If images are provided, use vision format
       if (images && images.length > 0) {
@@ -50,6 +57,7 @@ export async function POST(req: NextRequest) {
       model: model || "gpt-4o",
       messages,
       stream: true,
+      stream_options: { include_usage: true },
     });
 
     // Create a readable stream for the response
@@ -61,6 +69,16 @@ export async function POST(req: NextRequest) {
             const content = chunk.choices[0]?.delta?.content || "";
             if (content) {
               controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content })}\n\n`));
+            }
+
+            // Send token usage if available (last chunk)
+            if (chunk.usage) {
+              const tokens = {
+                prompt: chunk.usage.prompt_tokens,
+                completion: chunk.usage.completion_tokens,
+                total: chunk.usage.total_tokens
+              };
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ tokens })}\n\n`));
             }
           }
           controller.enqueue(encoder.encode("data: [DONE]\n\n"));
