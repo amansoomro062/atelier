@@ -59,7 +59,7 @@ export function BatchTestingPanel({
 }: BatchTestingPanelProps) {
   const { testCases, addTestCase, updateTestCase, deleteTestCase } =
     useTestCases();
-  const { apiKeys } = useApiKeys();
+  const { keys: apiKeys } = useApiKeys();
   const { addTestRun } = useTestHistory();
 
   const [selectedTestCases, setSelectedTestCases] = useState<Set<string>>(
@@ -75,7 +75,7 @@ export function BatchTestingPanel({
   });
 
   const [provider, setProvider] = useState<"openai" | "anthropic">("openai");
-  const [model, setModel] = useState(DEFAULT_MODELS.openai);
+  const [model, setModel] = useState<string>(DEFAULT_MODELS.openai);
   const [isRunning, setIsRunning] = useState(false);
   const [progress, setProgress] = useState(0);
   const [total, setTotal] = useState(0);
