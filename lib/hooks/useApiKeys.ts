@@ -16,14 +16,29 @@ export function useApiKeys() {
   useEffect(() => {
     // Load keys from localStorage on mount
     const stored = localStorage.getItem(STORAGE_KEY);
+    let loadedKeys: ApiKeys = {};
+
     if (stored) {
       try {
-        const parsed = JSON.parse(stored);
-        setKeys(parsed);
+        loadedKeys = JSON.parse(stored);
       } catch (error) {
         console.error("Failed to parse stored API keys:", error);
       }
     }
+
+    // Use environment variables as defaults if not in localStorage
+    const envKeys: ApiKeys = {
+      openai: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+      anthropic: process.env.NEXT_PUBLIC_ANTHROPIC_API_KEY,
+    };
+
+    // Merge: localStorage takes precedence, env vars as fallback
+    const finalKeys: ApiKeys = {
+      openai: loadedKeys.openai || envKeys.openai,
+      anthropic: loadedKeys.anthropic || envKeys.anthropic,
+    };
+
+    setKeys(finalKeys);
     setIsLoaded(true);
   }, []);
 

@@ -8,14 +8,32 @@ An open-source AI Prompt Engineering Playground that empowers users to craft, te
 
 ## Features
 
-- **Multi-Provider AI Support**: Test prompts with OpenAI (GPT-4, GPT-3.5) and Anthropic (Claude 3.5 Sonnet, Haiku)
+### Editor Mode
+- **Multi-Provider AI Support**: Test prompts with OpenAI (GPT-4o, GPT-4o-mini, GPT-4, GPT-3.5) and Anthropic (Claude 3.7 Sonnet, Claude 3.5 Sonnet, Claude 3.5 Haiku, Claude 3 Opus)
+- **Conversational Mode**: Multi-turn conversations with persistent history and context
+- **Token Tracking**: Real-time token usage monitoring (prompt/completion/total) with cumulative statistics
+- **Vision Support**: Upload and analyze images with vision-capable models
 - **Real-time Streaming**: See AI responses stream in real-time
+- **Fullscreen Mode**: Distraction-free writing with expandable prompt editor
 - **Live Code Execution**: Execute JavaScript code directly in the browser
 - **Monaco Editor**: VS Code-like editing experience with syntax highlighting
-- **Dark/Light Mode**: Beautiful themes that adapt to your preference
+- **History & Stats**: Track conversation history with detailed token usage analytics
+
+### Testing Mode (NEW!)
+- **System Prompt Library**: Store, organize, and manage multiple system prompts
+- **File Import**: Upload system prompts from files (.txt, .md)
+- **Batch Testing**: Run multiple prompts against multiple test cases simultaneously
+- **Side-by-Side Comparison**: Compare outputs from different prompts visually
+- **Evaluation Metrics**: Track response time, token usage, and costs
+- **Export Results**: Download test results as JSON for analysis
+
+### General
+- **Refined UI**: Tabbed interface with connected design and vibrant purple accent colors
+- **Dark/Light Mode**: Sophisticated navy-purple dark mode and warm off-white light mode
 - **Privacy-First**: BYOK (Bring Your Own Key) - API keys stored locally, never sent to our servers
-- **Responsive Design**: Resizable panels that adapt to your workflow
+- **Responsive Design**: Resizable panels with proper overflow handling
 - **Zero Setup**: No backend required for MVP features
+- **Keyboard Shortcuts**: Press Enter to run prompts, Shift+Enter for new lines
 
 ## Use Cases
 
@@ -49,14 +67,35 @@ npm run dev
 
 Visit [http://localhost:3000](http://localhost:3000) to see Atelier in action!
 
+### Two Modes
+
+Atelier has two powerful modes:
+
+1. **Editor Mode** (Default): Traditional prompt engineering with live code execution
+   - Write system and user prompts
+   - See AI responses in real-time
+   - Execute and test generated code
+
+2. **Testing Mode** (NEW!): Advanced system prompt testing and comparison
+   - Import and manage multiple system prompts
+   - Create reusable test cases
+   - Run batch tests across all prompts
+   - Compare results side-by-side with metrics
+
+Switch between modes using the tabs in the header. See [TESTING_GUIDE.md](TESTING_GUIDE.md) for detailed testing instructions.
+
 ### First Steps
 
 1. **Add API Keys**: Click the "API Keys" button in the header
 2. **Enter your OpenAI or Anthropic API key** (stored locally in your browser)
-3. **Write a system prompt**: Guide the AI's behavior
-4. **Write a user prompt**: Ask the AI to generate code
-5. **Click "Run Prompt"**: See the streaming response
-6. **Test the code**: Click "Run Code" to execute JavaScript
+3. **Select a model**: Choose from the latest GPT-4o or Claude 3.7 Sonnet models
+4. **Write a system prompt**: Guide the AI's behavior (use fullscreen mode for longer prompts)
+5. **Write a user prompt**: Ask the AI to generate code or analyze images
+6. **Optional**: Enable conversational mode for multi-turn conversations
+7. **Optional**: Add images for vision-capable models
+8. **Click "Run Prompt"** or press Enter: See the streaming response
+9. **Track usage**: View token statistics in the Stats tab
+10. **Test the code**: Click "Run Code" to execute JavaScript
 
 ## Architecture
 
@@ -124,28 +163,43 @@ Compare outputs to refine your prompt strategy!
 
 ## Roadmap
 
-### Phase 1: MVP ✅ (Current)
+### Phase 1: MVP ✅
 - [x] OpenAI & Anthropic integration
 - [x] Streaming responses
 - [x] Basic code execution
 - [x] API key management
 - [x] Dark/light themes
+- [x] Conversational mode with history
+- [x] Token usage tracking
+- [x] Vision support (image upload)
+- [x] Latest AI models (GPT-4o, Claude 3.7 Sonnet, etc.)
+- [x] Fullscreen editor mode
+- [x] Refined UI with tabbed layout
 
-### Phase 2: Community Features (Coming Soon)
+### Phase 2: Enhanced Editor Features (In Progress)
+- [x] Conversation history tracking
+- [x] Token statistics dashboard
+- [ ] Markdown rendering for AI responses
+- [ ] Export conversation history
+- [ ] Code execution in preview panel
+- [ ] Detailed token cost calculations
+- [ ] Prompt templates and snippets
+
+### Phase 3: Community Features (Coming Soon)
 - [ ] User authentication
 - [ ] Prompt template library
 - [ ] Share prompts with the community
 - [ ] Upvote/downvote system
 - [ ] User profiles
 
-### Phase 3: Advanced Features
+### Phase 4: Advanced Features
 - [ ] Side-by-side model comparison
 - [ ] WebContainer integration (full Node.js)
 - [ ] React component preview
 - [ ] Prompt version history
 - [ ] Analytics dashboard
 
-### Phase 4: Ecosystem
+### Phase 5: Ecosystem
 - [ ] VS Code extension
 - [ ] Browser extension
 - [ ] API for programmatic access
