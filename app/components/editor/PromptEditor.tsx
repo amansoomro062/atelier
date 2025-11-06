@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Play, Loader2, ImagePlus, X, RotateCcw } from "lucide-react";
+import { Play, Loader2, ImagePlus, X, RotateCcw, Maximize2, Minimize2 } from "lucide-react";
 import { useApiKeys } from "@/lib/hooks/useApiKeys";
 import { Message } from "@/lib/types";
 import { toast } from "sonner";
@@ -41,6 +41,7 @@ export function PromptEditor({
   const [images, setImages] = useState<Array<{ file: File; preview: string }>>([]);
   const [tokenUsage, setTokenUsage] = useState<{ prompt: number; completion: number; total: number } | null>(null);
   const [cumulativeTokens, setCumulativeTokens] = useState({ prompt: 0, completion: 0, total: 0 });
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const { getApiKey } = useApiKeys();
 
   const setIsRunning = onRunningChange;
@@ -222,9 +223,9 @@ export function PromptEditor({
   };
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="flex-1 overflow-auto p-4">
-        <div className="flex items-center justify-between mb-4">
+    <div className={`flex flex-col ${isFullscreen ? 'fixed inset-0 z-50 bg-background' : 'h-full'}`}>
+      <div className="flex-1 overflow-hidden p-4 flex flex-col">
+        <div className="flex items-center justify-between mb-4 shrink-0">
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-md border bg-card">
             <Switch
               id="conversational-mode"
@@ -245,22 +246,40 @@ export function PromptEditor({
           )}
         </div>
 
-        <Tabs defaultValue="system" className="h-full flex flex-col">
-          <TabsList className="grid w-full grid-cols-4 mb-4">
-            <TabsTrigger value="system" disabled={isRunning}>System</TabsTrigger>
-            <TabsTrigger value="user" disabled={isRunning}>User</TabsTrigger>
-            <TabsTrigger value="history" disabled={isRunning}>
-              History {conversationHistory.length > 0 && `(${conversationHistory.length})`}
+        <Tabs defaultValue="system" className="flex-1 flex flex-col min-h-0">
+          <div className="flex items-center gap-2 mb-4">
+            <TabsList className="flex-1 grid grid-cols-2 bg-muted/30">
+            <TabsTrigger
+              value="system"
+              disabled={isRunning}
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm transition-all"
+            >
+              System
             </TabsTrigger>
-            <TabsTrigger value="stats" disabled={isRunning}>Stats</TabsTrigger>
+            <TabsTrigger
+              value="user"
+              disabled={isRunning}
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm transition-all"
+            >
+              User
+            </TabsTrigger>
           </TabsList>
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={() => setIsFullscreen(!isFullscreen)}
+            className="shrink-0"
+          >
+            {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+          </Button>
+          </div>
 
-          <TabsContent value="system" className="flex-1 mt-0">
+          <TabsContent value="system" className="flex-1 mt-0 overflow-hidden flex flex-col">
             <Textarea
               placeholder="Enter your system prompt here..."
               value={systemPrompt}
               onChange={(e) => setSystemPrompt(e.target.value)}
-              className="h-full min-h-[300px] resize-none font-mono text-sm"
+              className="flex-1 resize-none font-mono text-sm"
               disabled={isRunning}
             />
             <div className="mt-2 text-xs text-muted-foreground">
@@ -268,7 +287,7 @@ export function PromptEditor({
             </div>
           </TabsContent>
 
-          <TabsContent value="user" className="flex-1 mt-0 space-y-3">
+          <TabsContent value="user" className="flex-1 mt-0 overflow-hidden flex flex-col gap-3">
             <Textarea
               placeholder="Enter your user prompt here... (Press Enter to run, Shift+Enter for new line)"
               value={userPrompt}
@@ -281,7 +300,7 @@ export function PromptEditor({
                   }
                 }
               }}
-              className="h-full min-h-[200px] resize-none font-mono text-sm"
+              className="flex-1 resize-none font-mono text-sm"
               disabled={isRunning}
             />
             <div className="flex items-center justify-between">
@@ -333,178 +352,6 @@ export function PromptEditor({
                 ))}
               </div>
             )}
-          </TabsContent>
-
-          <TabsContent value="history" className="flex-1 mt-0 overflow-auto">
-            {conversationHistory.length === 0 ? (
-              <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
-                No conversation history yet. Enable Conversational Mode and start chatting!
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {conversationHistory.map((msg, index) => (
-                  <div
-                    key={index}
-                    className={`p-3 rounded-lg border ${
-                      msg.role === "user"
-                        ? "bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-900"
-                        : "bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-900"
-                    }`}
-                  >
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-semibold uppercase tracking-wide">
-                          {msg.role === "user" ? "👤 User" : "🤖 Assistant"}
-                        </span>
-                        {msg.timestamp && (
-                          <span className="text-xs text-muted-foreground">
-                            {new Date(msg.timestamp).toLocaleTimeString()}
-                          </span>
-                        )}
-                      </div>
-                      {msg.tokens && (
-                        <div className="text-xs bg-background/50 px-2 py-1 rounded border">
-                          {msg.tokens.total.toLocaleString()} tokens
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="text-sm whitespace-pre-wrap font-mono break-words">
-                      {msg.content}
-                    </div>
-
-                    {msg.images && msg.images.length > 0 && (
-                      <div className="mt-2 flex gap-2 flex-wrap">
-                        {msg.images.map((img, imgIndex) => (
-                          <div key={imgIndex} className="text-xs bg-background/50 px-2 py-1 rounded border">
-                            🖼️ Image {imgIndex + 1}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {msg.tokens && (
-                      <div className="mt-2 pt-2 border-t text-xs text-muted-foreground space-y-1">
-                        <div className="flex justify-between">
-                          <span>Prompt:</span>
-                          <span className="font-mono">{msg.tokens.prompt.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Completion:</span>
-                          <span className="font-mono">{msg.tokens.completion.toLocaleString()}</span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ))}
-
-                {/* Summary Card */}
-                {cumulativeTokens.total > 0 && (
-                  <div className="p-4 rounded-lg border bg-muted/50 sticky bottom-0">
-                    <div className="text-sm font-semibold mb-2">Session Summary</div>
-                    <div className="text-xs space-y-1">
-                      <div className="flex justify-between">
-                        <span>Total Messages:</span>
-                        <span className="font-mono">{conversationHistory.length}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Total Prompt Tokens:</span>
-                        <span className="font-mono">{cumulativeTokens.prompt.toLocaleString()}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Total Completion Tokens:</span>
-                        <span className="font-mono">{cumulativeTokens.completion.toLocaleString()}</span>
-                      </div>
-                      <div className="flex justify-between font-semibold pt-1 border-t">
-                        <span>Total Tokens:</span>
-                        <span className="font-mono">{cumulativeTokens.total.toLocaleString()}</span>
-                      </div>
-                      <div className="flex justify-between text-muted-foreground pt-1">
-                        <span>Avg per message:</span>
-                        <span className="font-mono">
-                          {Math.round(cumulativeTokens.total / conversationHistory.length).toLocaleString()}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-          </TabsContent>
-
-          <TabsContent value="stats" className="flex-1 mt-0">
-            <div className="h-full flex flex-col gap-4 p-4">
-              {/* Last Response Stats */}
-              {tokenUsage ? (
-                <div className="space-y-4">
-                  <div className="border rounded-lg p-4 bg-card">
-                    <h3 className="text-base font-semibold mb-3">Last Response:</h3>
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Prompt tokens:</span>
-                        <span className="text-lg font-semibold">{tokenUsage.prompt.toLocaleString()}</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Completion tokens:</span>
-                        <span className="text-lg font-semibold">{tokenUsage.completion.toLocaleString()}</span>
-                      </div>
-                      <div className="flex justify-between items-center pt-2 border-t">
-                        <span className="text-sm font-medium">Total:</span>
-                        <span className="text-xl font-bold">{tokenUsage.total.toLocaleString()}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Session Total Stats */}
-                  {isConversational && cumulativeTokens.total > 0 && (
-                    <div className="border rounded-lg p-4 bg-card">
-                      <h3 className="text-base font-semibold mb-3">Session Total:</h3>
-                      <div className="space-y-2">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm text-muted-foreground">All tokens:</span>
-                          <span className="text-xl font-bold">{cumulativeTokens.total.toLocaleString()}</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Detailed Session Summary */}
-                  {isConversational && conversationHistory.length > 0 && (
-                    <div className="border rounded-lg p-4 bg-card">
-                      <h3 className="text-base font-semibold mb-3">Session Summary</h3>
-                      <div className="space-y-2">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm text-muted-foreground">Total Messages:</span>
-                          <span className="text-lg font-semibold">{conversationHistory.length}</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm text-muted-foreground">Total Prompt Tokens:</span>
-                          <span className="text-lg font-semibold">{cumulativeTokens.prompt.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm text-muted-foreground">Total Completion Tokens:</span>
-                          <span className="text-lg font-semibold">{cumulativeTokens.completion.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between items-center pt-2 border-t">
-                          <span className="text-sm font-medium">Total Tokens:</span>
-                          <span className="text-xl font-bold">{cumulativeTokens.total.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between items-center pt-2 text-muted-foreground">
-                          <span className="text-xs">Avg per message:</span>
-                          <span className="text-base font-medium">
-                            {Math.round(cumulativeTokens.total / conversationHistory.length).toLocaleString()}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
-                  No token statistics yet. Run a prompt to see token usage!
-                </div>
-              )}
-            </div>
           </TabsContent>
         </Tabs>
       </div>
