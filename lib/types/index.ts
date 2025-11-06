@@ -45,3 +45,91 @@ export interface ExecutionResult {
   error?: string;
   logs: string[];
 }
+
+// System Prompt Testing Types
+export interface SystemPromptTemplate {
+  id: string;
+  name: string;
+  description?: string;
+  content: string;
+  tags?: string[];
+  createdAt: string;
+  updatedAt: string;
+  source?: "file" | "manual" | "github";
+  sourceUrl?: string;
+}
+
+export interface TestCase {
+  id: string;
+  name: string;
+  userPrompt: string;
+  expectedBehavior?: string;
+  tags?: string[];
+}
+
+export interface BatchTestResult {
+  id: string;
+  promptTemplateId: string;
+  promptTemplateName: string;
+  testCaseId: string;
+  testCaseName: string;
+  provider: "openai" | "anthropic";
+  model: string;
+  response: string;
+  metrics: EvaluationMetrics;
+  timestamp: string;
+}
+
+export interface EvaluationMetrics {
+  responseTime: number; // in milliseconds
+  tokens?: {
+    prompt: number;
+    completion: number;
+    total: number;
+  };
+  cost?: number;
+  qualityScore?: number; // 0-100
+  relevanceScore?: number; // 0-100
+  coherenceScore?: number; // 0-100
+  customMetrics?: Record<string, number>;
+}
+
+export interface BatchTestConfig {
+  promptTemplates: SystemPromptTemplate[];
+  testCases: TestCase[];
+  provider: "openai" | "anthropic";
+  model: string;
+  apiKey: string;
+  evaluateQuality?: boolean;
+}
+
+export interface ComparisonResult {
+  testCase: TestCase;
+  results: BatchTestResult[];
+}
+
+export interface TestRun {
+  id: string;
+  name: string;
+  description?: string;
+  results: BatchTestResult[];
+  config: {
+    provider: "openai" | "anthropic";
+    model: string;
+    promptCount: number;
+    testCaseCount: number;
+  };
+  summary: {
+    totalTests: number;
+    avgResponseTime: number;
+    totalTokens: number;
+    totalCost: number;
+  };
+  timestamp: string;
+}
+
+export interface PromptVariable {
+  key: string;
+  value: string;
+  description?: string;
+}

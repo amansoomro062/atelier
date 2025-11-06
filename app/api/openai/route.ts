@@ -5,7 +5,7 @@ export const runtime = "edge";
 
 export async function POST(req: NextRequest) {
   try {
-    const { systemPrompt, userPrompt, model, apiKey } = await req.json();
+    const { systemPrompt, userPrompt, model, apiKey, images } = await req.json();
 
     if (!apiKey) {
       return NextResponse.json(
@@ -18,18 +18,36 @@ export async function POST(req: NextRequest) {
       apiKey,
     });
 
-    const messages: Array<{ role: "system" | "user"; content: string }> = [];
+    const messages: Array<any> = [];
 
     if (systemPrompt) {
       messages.push({ role: "system", content: systemPrompt });
     }
 
     if (userPrompt) {
-      messages.push({ role: "user", content: userPrompt });
+      // If images are provided, use vision format
+      if (images && images.length > 0) {
+        const content: any[] = [
+          { type: "text", text: userPrompt }
+        ];
+
+        images.forEach((img: any) => {
+          content.push({
+            type: "image_url",
+            image_url: {
+              url: `data:${img.mimeType};base64,${img.data}`
+            }
+          });
+        });
+
+        messages.push({ role: "user", content });
+      } else {
+        messages.push({ role: "user", content: userPrompt });
+      }
     }
 
     const stream = await openai.chat.completions.create({
-      model: model || "gpt-4",
+      model: model || "gpt-4o",
       messages,
       stream: true,
     });

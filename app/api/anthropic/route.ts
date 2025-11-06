@@ -5,7 +5,7 @@ export const runtime = "edge";
 
 export async function POST(req: NextRequest) {
   try {
-    const { systemPrompt, userPrompt, model, apiKey } = await req.json();
+    const { systemPrompt, userPrompt, model, apiKey, images } = await req.json();
 
     if (!apiKey) {
       return NextResponse.json(
@@ -18,14 +18,34 @@ export async function POST(req: NextRequest) {
       apiKey,
     });
 
+    // Build content array for vision support
+    let content: any = userPrompt;
+
+    if (images && images.length > 0) {
+      content = [
+        { type: "text", text: userPrompt }
+      ];
+
+      images.forEach((img: any) => {
+        content.push({
+          type: "image",
+          source: {
+            type: "base64",
+            media_type: img.mimeType,
+            data: img.data
+          }
+        });
+      });
+    }
+
     const stream = await anthropic.messages.stream({
       model: model || "claude-3-5-sonnet-20241022",
-      max_tokens: 4096,
+      max_tokens: 8192,
       system: systemPrompt || undefined,
       messages: [
         {
           role: "user",
-          content: userPrompt,
+          content,
         },
       ],
     });

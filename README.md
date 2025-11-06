@@ -8,10 +8,21 @@ An open-source AI Prompt Engineering Playground that empowers users to craft, te
 
 ## Features
 
+### Editor Mode
 - **Multi-Provider AI Support**: Test prompts with OpenAI (GPT-4, GPT-3.5) and Anthropic (Claude 3.5 Sonnet, Haiku)
 - **Real-time Streaming**: See AI responses stream in real-time
 - **Live Code Execution**: Execute JavaScript code directly in the browser
 - **Monaco Editor**: VS Code-like editing experience with syntax highlighting
+
+### Testing Mode (NEW!)
+- **System Prompt Library**: Store, organize, and manage multiple system prompts
+- **File Import**: Upload system prompts from files (.txt, .md)
+- **Batch Testing**: Run multiple prompts against multiple test cases simultaneously
+- **Side-by-Side Comparison**: Compare outputs from different prompts visually
+- **Evaluation Metrics**: Track response time, token usage, and costs
+- **Export Results**: Download test results as JSON for analysis
+
+### General
 - **Dark/Light Mode**: Beautiful themes that adapt to your preference
 - **Privacy-First**: BYOK (Bring Your Own Key) - API keys stored locally, never sent to our servers
 - **Responsive Design**: Resizable panels that adapt to your workflow
@@ -48,6 +59,23 @@ npm run dev
 ```
 
 Visit [http://localhost:3000](http://localhost:3000) to see Atelier in action!
+
+### Two Modes
+
+Atelier has two powerful modes:
+
+1. **Editor Mode** (Default): Traditional prompt engineering with live code execution
+   - Write system and user prompts
+   - See AI responses in real-time
+   - Execute and test generated code
+
+2. **Testing Mode** (NEW!): Advanced system prompt testing and comparison
+   - Import and manage multiple system prompts
+   - Create reusable test cases
+   - Run batch tests across all prompts
+   - Compare results side-by-side with metrics
+
+Switch between modes using the tabs in the header. See [TESTING_GUIDE.md](TESTING_GUIDE.md) for detailed testing instructions.
 
 ### First Steps
 
