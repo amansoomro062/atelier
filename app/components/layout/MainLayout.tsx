@@ -17,7 +17,7 @@ export function MainLayout() {
   const [aiResponse, setAiResponse] = useState("");
   const [consoleLogs, setConsoleLogs] = useState<string[]>([]);
   const [provider, setProvider] = useState<"openai" | "anthropic">("anthropic");
-  const [model, setModel] = useState(DEFAULT_MODELS.anthropic);
+  const [model, setModel] = useState<string>(DEFAULT_MODELS.anthropic);
   const [isConversational, setIsConversational] = useState(false);
   const [conversationHistory, setConversationHistory] = useState<any[]>([]);
   const [isRunning, setIsRunning] = useState(false);

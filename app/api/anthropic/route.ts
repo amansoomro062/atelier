@@ -3,13 +3,90 @@ import Anthropic from "@anthropic-ai/sdk";
 
 export const runtime = "edge";
 
+// Rate limiting (simple in-memory store - for production use Redis or similar)
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+
+function checkRateLimit(identifier: string): boolean {
+  const now = Date.now();
+  const limit = rateLimitMap.get(identifier);
+
+  if (!limit || now > limit.resetTime) {
+    rateLimitMap.set(identifier, { count: 1, resetTime: now + 60000 }); // 1 minute window
+    return true;
+  }
+
+  if (limit.count >= 20) { // 20 requests per minute
+    return false;
+  }
+
+  limit.count++;
+  return true;
+}
+
 export async function POST(req: NextRequest) {
   try {
+    // Check origin - only allow requests from same origin in production
+    const origin = req.headers.get("origin");
+    const host = req.headers.get("host");
+
+    if (process.env.NODE_ENV === "production" && origin) {
+      const allowedOrigins = [
+        `https://${host}`,
+        `http://${host}`,
+        process.env.NEXT_PUBLIC_APP_URL,
+      ].filter(Boolean);
+
+      if (!allowedOrigins.some(allowed => origin.startsWith(allowed as string))) {
+        return NextResponse.json(
+          { error: "Unauthorized origin" },
+          { status: 403 }
+        );
+      }
+    }
+
+    // Rate limiting by IP
+    const ip = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "unknown";
+    if (!checkRateLimit(ip)) {
+      return NextResponse.json(
+        { error: "Rate limit exceeded. Please try again later." },
+        { status: 429 }
+      );
+    }
+
     const { systemPrompt, userPrompt, model, apiKey, images, messages: conversationHistory } = await req.json();
 
     if (!apiKey) {
       return NextResponse.json(
         { error: "Anthropic API key is required" },
+        { status: 400 }
+      );
+    }
+
+    // Input validation
+    if (systemPrompt && systemPrompt.length > 100000) {
+      return NextResponse.json(
+        { error: "System prompt is too long" },
+        { status: 400 }
+      );
+    }
+
+    if (userPrompt && userPrompt.length > 100000) {
+      return NextResponse.json(
+        { error: "User prompt is too long" },
+        { status: 400 }
+      );
+    }
+
+    if (images && images.length > 10) {
+      return NextResponse.json(
+        { error: "Too many images. Maximum 10 allowed." },
+        { status: 400 }
+      );
+    }
+
+    if (conversationHistory && conversationHistory.length > 100) {
+      return NextResponse.json(
+        { error: "Conversation history is too long" },
         { status: 400 }
       );
     }
