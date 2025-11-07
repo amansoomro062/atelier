@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Copy, Check } from "lucide-react";
 import { toast } from "sonner";
@@ -51,8 +50,8 @@ export function PreviewPanel({ response = "", logs = [] }: PreviewPanelProps) {
         </div>
       </div>
 
-      <Tabs defaultValue="response" className="flex-1 flex flex-col">
-        <div className="mx-4 mt-2 mb-2">
+      <Tabs defaultValue="response" className="flex-1 flex flex-col min-h-0">
+        <div className="mx-4 mt-2 mb-2 shrink-0">
           <TabsList className="w-full grid grid-cols-3 bg-muted/30">
             <TabsTrigger
               value="response"
@@ -75,20 +74,18 @@ export function PreviewPanel({ response = "", logs = [] }: PreviewPanelProps) {
           </TabsList>
         </div>
 
-        <TabsContent value="response" className="flex-1 m-0 p-4">
-          <ScrollArea className="h-full">
-            {response ? (
-              <div className="prose prose-sm dark:prose-invert max-w-none">
-                <pre className="whitespace-pre-wrap font-mono text-sm bg-muted p-4 rounded-lg">
-                  {response}
-                </pre>
-              </div>
-            ) : (
-              <div className="flex h-full items-center justify-center text-muted-foreground">
-                Run a prompt to see AI response here
-              </div>
-            )}
-          </ScrollArea>
+        <TabsContent value="response" className="flex-1 m-0 px-4 pb-4 overflow-auto">
+          {response ? (
+            <div className="prose prose-sm dark:prose-invert max-w-none">
+              <pre className="whitespace-pre-wrap font-mono text-sm bg-muted p-4 rounded-lg">
+                {response}
+              </pre>
+            </div>
+          ) : (
+            <div className="flex h-full items-center justify-center text-muted-foreground">
+              Run a prompt to see AI response here
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="preview" className="flex-1 m-0 p-4">
@@ -99,22 +96,20 @@ export function PreviewPanel({ response = "", logs = [] }: PreviewPanelProps) {
           </Card>
         </TabsContent>
 
-        <TabsContent value="console" className="flex-1 m-0 p-4">
-          <ScrollArea className="h-full">
-            {logs.length > 0 ? (
-              <div className="space-y-1 font-mono text-xs">
-                {logs.map((log, i) => (
-                  <div key={i} className="text-muted-foreground">
-                    {log}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="flex h-full items-center justify-center text-muted-foreground">
-                Console output will appear here
-              </div>
-            )}
-          </ScrollArea>
+        <TabsContent value="console" className="flex-1 m-0 px-4 pb-4 overflow-auto">
+          {logs.length > 0 ? (
+            <div className="space-y-1 font-mono text-xs">
+              {logs.map((log, i) => (
+                <div key={i} className="text-muted-foreground">
+                  {log}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex h-full items-center justify-center text-muted-foreground">
+              Console output will appear here
+            </div>
+          )}
         </TabsContent>
       </Tabs>
     </div>
